@@ -26,6 +26,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             role: user.role,
             name: user.name,
             email: user.email,
+            image: user.image,
           };
         }
         throw new Error("Invalid credentials");
@@ -42,6 +43,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.email = user.email;
         token.role = user.role;
         token.name = user.name;
+        token.image = user.image;
       }
       return token;
     },
@@ -50,6 +52,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       session.user.email = token.email as string;
       session.user.role = token.role as string;
       session.user.name = token.name as string;
+      session.user.image = token.image as string;
       return session;
     },
   },

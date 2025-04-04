@@ -32,12 +32,13 @@ import {
 } from "@/components/ui/sidebar";
 import { NavAdmin } from "./nav-admin";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
 
 const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: "/dashboard",
       icon: LayoutDashboardIcon,
     },
     {
@@ -54,54 +55,6 @@ const data = {
       title: "Analytics",
       url: "#",
       icon: BarChartIcon,
-    },
-  ],
-  navClouds: [
-    {
-      title: "Capture",
-      icon: CameraIcon,
-      isActive: true,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Proposal",
-      icon: FileTextIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "Prompts",
-      icon: FileCodeIcon,
-      url: "#",
-      items: [
-        {
-          title: "Active Proposals",
-          url: "#",
-        },
-        {
-          title: "Archived",
-          url: "#",
-        },
-      ],
     },
   ],
   navSecondary: [
@@ -124,7 +77,7 @@ const data = {
   admin: [
     {
       name: "Users",
-      url: "#",
+      url: "/users",
       icon: Users2,
     },
     {
@@ -158,8 +111,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <a href="#">
-                <ArrowUpCircleIcon className="h-5 w-5" />
-                <span className="text-base font-semibold">AI-Inventory</span>
+                <Image src={"/logo.png"} alt="Logo" width={32} height={32} />
+                <span className="text-base font-semibold">Inventory Mind</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -167,7 +120,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavAdmin items={data.admin} />
+        {session?.user.role === "ADMIN" && <NavAdmin items={data.admin} />}
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
