@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -22,16 +22,19 @@ import {
 import { PlusCircle, Upload, X } from "lucide-react";
 import { createUser } from "@/actions/user.action";
 import { toast } from "sonner";
+import prisma from "@/lib/db";
+import { Textarea } from "../ui/textarea";
+import { upsertItem } from "@/actions/item.action";
 
-export default function UserFormSheet() {
+export default function ProductFormSheet() {
   const [imagePreview, setImagePreview] = useState<string | null | ArrayBuffer>(
     null
   );
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [name, setName] = useState<string>("");
-  const [role, setRole] = useState<string>("USER");
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [price, setPrice] = useState<string>("0");
+  const [quantity, setQuantity] = useState<string>("0");
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleImageChange = (e: any) => {
@@ -58,28 +61,24 @@ export default function UserFormSheet() {
 
   const handleSubmit = async () => {
     setLoading(true);
-    if (!name || !email || !role || !password) {
-      toast.error("Please fill all fields");
-      setLoading(false);
-      return;
-    }
     const formData = new FormData();
     formData.append("name", name);
-    formData.append("email", email);
-    formData.append("role", role);
-    formData.append("password", password);
-    if (imageFile) formData.append("profileImage", imageFile);
-
-    toast.promise(createUser(formData), {
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("quantity", quantity);
+    if (imageFile) {
+      formData.append("productImage", imageFile);
+    }
+    toast.promise(upsertItem(formData), {
       loading: `Adding ${name}...`,
-      success: "User added successfully!",
-      error: "Failed to add user",
+      success: "Item added successfully!",
+      error: "Failed to add item",
     });
     setLoading(false);
     setName("");
-    setEmail("");
-    setRole("USER");
-    setPassword("");
+    setDescription("");
+    setPrice("0");
+    setQuantity("0");
     setImagePreview(null);
     setImageFile(null);
   };
@@ -89,12 +88,12 @@ export default function UserFormSheet() {
       <SheetTrigger asChild>
         <Button variant="link" className="w-fit px-0 text-left text-foreground">
           <PlusCircle />
-          Add User
+          Add Item
         </Button>
       </SheetTrigger>
       <SheetContent side="right" className="flex flex-col">
         <SheetHeader className="gap-1">
-          <SheetTitle>Add User</SheetTitle>
+          <SheetTitle>Add Product</SheetTitle>
           <SheetDescription>
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Odit ea id
             ex maiores.
@@ -102,21 +101,22 @@ export default function UserFormSheet() {
         </SheetHeader>
         <div className="flex flex-1 flex-col gap-4 overflow-y-auto py-4 text-sm">
           <form className="flex flex-col gap-4">
-            <div className="flex flex-col items-center gap-3">
-              <div className="relative h-24 w-24">
-                <div className="h-full w-full overflow-hidden rounded-full border border-gray-300 bg-gray-100">
+            <div className="flex flex-col items-center gap-3 w-full">
+              <div className="relative w-full">
+                <div className="h-full w-full overflow-hidden border border-gray-300 bg-gray-100 rounded-lg">
                   {imagePreview ? (
                     <img
                       src={imagePreview as string}
-                      alt="User avatar"
-                      className="h-full w-full object-cover"
+                      alt="Product image"
+                      className="h-full w-full max-h-40 object-cover" // Adjusted with max-h-72
                     />
                   ) : (
-                    <div className="flex h-full w-full items-center justify-center text-gray-400">
+                    <div className="flex w-full h-40 items-center justify-center text-gray-400">
                       <Upload size={24} />
                     </div>
                   )}
                 </div>
+
                 {imagePreview ? (
                   <button
                     type="button"
@@ -128,22 +128,23 @@ export default function UserFormSheet() {
                   </button>
                 ) : (
                   <Label
-                    htmlFor="profile-image"
+                    htmlFor="product-image"
                     className="absolute bottom-0 right-0 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90"
                   >
                     <PlusCircle size={16} />
                   </Label>
                 )}
+
                 <Input
-                  id="profile-image"
-                  name="profileImage"
+                  id="product-image"
+                  name="productImage"
                   type="file"
                   accept="image/*"
                   className="hidden"
                   onChange={handleImageChange}
                 />
               </div>
-              <span className="text-xs text-gray-500">Profile Picture</span>
+              <span className="text-xs text-gray-500">Product Image</span>
             </div>
             <div className="flex flex-col gap-3">
               <Label htmlFor="name">Name</Label>
@@ -156,39 +157,35 @@ export default function UserFormSheet() {
               />
             </div>
             <div className="flex flex-col gap-3">
-              <Label htmlFor="role">Role</Label>
-              <Select
-                defaultValue={"USER"}
-                value={role}
-                onValueChange={(value: string) => setRole(value)}
-              >
-                <SelectTrigger id="role" className="w-full">
-                  <SelectValue placeholder="Select a Role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="USER">USER</SelectItem>
-                  <SelectItem value="ADMIN">ADMIN</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex flex-col gap-3">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                placeholder="Enter Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+              <Label htmlFor="description">Description</Label>
+              <Textarea
+                id="description"
+                name="description"
+                placeholder="Enter Description"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </div>
             <div className="flex flex-col gap-3">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="price">Price</Label>
               <Input
-                id="password"
-                name="password"
-                placeholder="Enter Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                id="price"
+                name="price"
+                type="number"
+                placeholder="Enter Price"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-3">
+              <Label htmlFor="price">Quantity</Label>
+              <Input
+                id="quantity"
+                name="quantity"
+                type="number"
+                placeholder="Enter Quantity"
+                value={quantity}
+                onChange={(e) => setQuantity(e.target.value)}
               />
             </div>
           </form>
@@ -200,7 +197,7 @@ export default function UserFormSheet() {
               onClick={handleSubmit}
               disabled={loading}
             >
-              {loading ? "Adding..." : "Add User"}
+              {loading ? "Adding..." : "Insert Product"}
             </Button>
           </SheetClose>
         </SheetFooter>

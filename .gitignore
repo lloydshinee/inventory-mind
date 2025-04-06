@@ -21,7 +21,8 @@
 *.pem
 .env
 /generated/prisma
-/public/userProfiles/
+/public/userProfiles/*
+/public/productImages/*
 
 # debug
 npm-debug.log*
@@ -32,7 +33,7 @@ yarn-error.log*
 .env*.local
 # Ignore Prisma development database
 prisma/dev.db
-
+.db
 
 # vercel
 .vercel

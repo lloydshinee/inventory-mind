@@ -43,7 +43,7 @@ const data = {
     },
     {
       title: "Products",
-      url: "#",
+      url: "/products",
       icon: ListIcon,
     },
     {

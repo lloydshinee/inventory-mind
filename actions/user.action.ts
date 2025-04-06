@@ -34,7 +34,7 @@ export async function createUser(data: FormData) {
       data: {
         name,
         email,
-        password, // Hash in production!
+        password,
         role: role === "ADMIN" ? "ADMIN" : "USER",
         image: imagePath,
       },
