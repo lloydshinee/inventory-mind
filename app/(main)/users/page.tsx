@@ -1,5 +1,4 @@
 import { SiteHeader } from "@/components/site-header";
-import { UsersTable } from "./users-table";
 import { Suspense } from "react";
 import Users from "./Users";
 

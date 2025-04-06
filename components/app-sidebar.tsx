@@ -1,14 +1,10 @@
 "use client";
 
 import {
-  ArrowUpCircleIcon,
   BarChartIcon,
   Bot,
-  CameraIcon,
   ClipboardListIcon,
   DatabaseIcon,
-  FileCodeIcon,
-  FileTextIcon,
   HelpCircleIcon,
   LayoutDashboardIcon,
   ListIcon,

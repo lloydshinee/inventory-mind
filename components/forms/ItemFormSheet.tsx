@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Sheet,
   SheetClose,
@@ -12,17 +12,8 @@ import {
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../ui/select";
 import { PlusCircle, Upload, X } from "lucide-react";
-import { createUser } from "@/actions/user.action";
 import { toast } from "sonner";
-import prisma from "@/lib/db";
 import { Textarea } from "../ui/textarea";
 import { upsertItem } from "@/actions/item.action";
 
