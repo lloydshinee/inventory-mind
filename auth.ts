@@ -5,31 +5,41 @@ import prisma from "./lib/db";
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
     Credentials({
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
       credentials: {
         email: {},
         password: {},
       },
-      authorize: async (credentials) => {
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials?.email as string,
-            password: credentials?.password as string,
-          },
-        });
+      // authorize: async (credentials) => {
+      //   const user = await prisma.user.findUnique({
+      //     where: {
+      //       email: credentials?.email as string,
+      //       password: credentials?.password as string,
+      //     },
+      //   });
 
-        if (user !== null) {
-          console.log("success", credentials.email, credentials.password);
+      //   if (user !== null) {
+      //     console.log("success", credentials.email, credentials.password);
+      //     return {
+      //       id: user.id,
+      //       role: user.role,
+      //       name: user.name,
+      //       email: user.email,
+      //       image: user.image,
+      //     };
+      //   }
+      //   throw new Error("Invalid credentials");
+      // },
+      authorize: async (credentials) => {
+        if (credentials?.email && credentials?.password) {
           return {
-            id: user.id,
-            role: user.role,
-            name: user.name,
-            email: user.email,
-            image: user.image,
+            id: "1234556",
+            role: "ADMIN",
+            name: "Test User",
+            email: credentials.email as string,
+            image: "https://via.placeholder.com/150", // Optional placeholder image
           };
         }
-        throw new Error("Invalid credentials");
+        throw new Error("Missing credentials");
       },
     }),
   ],
